@@ -6,7 +6,7 @@ import ReviewForm from '../reviewForm/ReviewForm';
 
 import React from 'react'
 
-const Review = ({getMovieData,movie,reviews,setReviews}) => {
+const Reviews = ({getMovieData,movie,reviews,setReviews}) => {
     const revText = useRef();
     let params = useParams();
     const movieId = params.movieId;
@@ -18,20 +18,29 @@ const Review = ({getMovieData,movie,reviews,setReviews}) => {
     const addReview = async (e) =>{
         e.preventDefault();
         const rev = revText.current;
+
+        try 
+        {   
         const response = await api.post("/api/v1/reviews", {reviewBody:rev.value,imdbId:movieId});
 
-        const updatedReviews=[...reviews, {body:rev.value}];
+        const updatedReviews=[...(reviews || [] ), {body:rev.value}];
 
         rev.value = "";
 
         setReviews(updatedReviews);
+
+        }
+        catch(err)
+        {
+            console.error(err);
+        }
         }
   return (
     <Container>
         <Row>
             <Col><h3>Reviews</h3></Col>
         </Row>
-        <Row>
+        <Row className = "mt-2">
             <Col>
                 <img src={movie?.poster} alt="" />
             </Col>
@@ -40,7 +49,7 @@ const Review = ({getMovieData,movie,reviews,setReviews}) => {
                     <>
                         <Row>
                             <Col>
-                                <ReviewForm handeSubmit={addReview} revText={revText} labelText = "Write a Review?"/>
+                                <ReviewForm handleSubmit={addReview} revText={revText} labelText = "Write a Review?"/>
                             </Col>
                         </Row>
                         <Row>
@@ -69,12 +78,12 @@ const Review = ({getMovieData,movie,reviews,setReviews}) => {
             </Col>
         </Row>
         <Row>
-                            <Col>
-                                <hr />
-                            </Col>
-                        </Row>
+            <Col>
+                <hr />
+            </Col>
+        </Row>
     </Container>
   )
 }
 
-export default Review
+export default Reviews
